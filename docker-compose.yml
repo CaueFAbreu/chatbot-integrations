@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: chatbot
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  llm-service:
+    build: ./integration-gateway/llm-service
+    restart: unless-stopped
+    environment:
+      - PORT=4001
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "4001:4001"
+
+  github-service:
+    build: ./integration-gateway/github-service
+    restart: unless-stopped
+    environment:
+      - PORT=4002
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO=${GITHUB_REPO}
+    ports:
+      - "4002:4002"
+
+  chat-engine:
+    build: ./chat-engine
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - llm-service
+      - github-service
+    environment:
+      - PORT=3000
+      - DATABASE_URL=mysql://root:root@mysql:3306/chatbot
+      - LLM_SERVICE_URL=http://llm-service:4001
+      - GITHUB_SERVICE_URL=http://github-service:4002
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql_data:
