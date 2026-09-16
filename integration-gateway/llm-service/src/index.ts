@@ -1,11 +1,11 @@
 import "dotenv/config";
 import express, { Request, Response } from "express";
-import { OpenAiProvider, ChatMessage } from "./llmProvider";
+import { GroqProvider, ChatMessage } from "./llmProvider";
 
 const app = express();
 app.use(express.json());
 
-const provider = new OpenAiProvider(process.env.OPENAI_API_KEY ?? "");
+const provider = new GroqProvider(process.env.GROQ_API_KEY ?? "");
 
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", service: "llm-service" });

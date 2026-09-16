@@ -1,7 +1,10 @@
 /**
- * Isola toda a comunicação com o provedor de LLM (OpenAI, por padrão).
- * Trocar de provedor no futuro significa mexer só neste arquivo —
- * é o ponto central do desacoplamento que esse microsserviço existe para garantir.
+ * Isola toda a comunicação com o provedor de LLM (Groq, por padrão — tier
+ * gratuito, sem custo). Trocar de provedor no futuro significa mexer só
+ * neste arquivo — é o ponto central do desacoplamento que esse
+ * microsserviço existe para garantir. A API da Groq é compatível com o
+ * formato da OpenAI, então trocar de volta pra OpenAI/outro provedor
+ * exigiria só ajustar a URL e o nome do modelo.
  */
 
 export interface ChatMessage {
@@ -13,20 +16,20 @@ export interface LlmProvider {
   generateReply(history: ChatMessage[]): Promise<string>;
 }
 
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-export class OpenAiProvider implements LlmProvider {
+export class GroqProvider implements LlmProvider {
   constructor(
     private readonly apiKey: string,
-    private readonly model: string = "gpt-4o-mini"
+    private readonly model: string = "llama-3.1-8b-instant"
   ) {}
 
   async generateReply(history: ChatMessage[]): Promise<string> {
     if (!this.apiKey) {
-      throw new Error("OPENAI_API_KEY não configurada");
+      throw new Error("GROQ_API_KEY não configurada");
     }
 
-    const response = await fetch(OPENAI_API_URL, {
+    const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

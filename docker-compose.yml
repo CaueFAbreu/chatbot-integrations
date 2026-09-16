@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     environment:
       - PORT=4001
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
     ports:
       - "4001:4001"
 
