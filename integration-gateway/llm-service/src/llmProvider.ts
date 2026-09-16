@@ -21,7 +21,7 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 export class GroqProvider implements LlmProvider {
   constructor(
     private readonly apiKey: string,
-    private readonly model: string = "llama-3.1-8b-instant"
+    private readonly model: string = "openai/gpt-oss-20b"
   ) {}
 
   async generateReply(history: ChatMessage[]): Promise<string> {
