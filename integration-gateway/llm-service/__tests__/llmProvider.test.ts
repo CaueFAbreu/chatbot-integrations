@@ -1,6 +1,6 @@
-import { OpenAiProvider } from "../src/llmProvider";
+import { GroqProvider } from "../src/llmProvider";
 
-describe("OpenAiProvider", () => {
+describe("GroqProvider", () => {
   const originalFetch = global.fetch;
 
   afterEach(() => {
@@ -9,9 +9,9 @@ describe("OpenAiProvider", () => {
   });
 
   it("lança erro quando a API key não está configurada", async () => {
-    const provider = new OpenAiProvider("");
+    const provider = new GroqProvider("");
     await expect(provider.generateReply([{ role: "user", content: "oi" }])).rejects.toThrow(
-      "OPENAI_API_KEY não configurada"
+      "GROQ_API_KEY não configurada"
     );
   });
 
@@ -23,7 +23,7 @@ describe("OpenAiProvider", () => {
       }),
     }) as unknown as typeof fetch;
 
-    const provider = new OpenAiProvider("fake-key");
+    const provider = new GroqProvider("fake-key");
     const reply = await provider.generateReply([{ role: "user", content: "oi" }]);
 
     expect(reply).toBe("Olá! Como posso ajudar?");
@@ -37,7 +37,7 @@ describe("OpenAiProvider", () => {
       text: async () => "internal error",
     }) as unknown as typeof fetch;
 
-    const provider = new OpenAiProvider("fake-key");
+    const provider = new GroqProvider("fake-key");
     await expect(provider.generateReply([{ role: "user", content: "oi" }])).rejects.toThrow(
       /Falha na API do LLM/
     );
